@@ -2,21 +2,18 @@ name: daily-checkin
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # UTC 时间 00:00 = 北京时间 08:00
-  workflow_dispatch:        # 允许手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - run: pip install playwright && playwright install chromium
-
       - run: python checkin.py
         env:
           USER: ${{ secrets.USER }}
