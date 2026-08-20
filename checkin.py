@@ -16,7 +16,7 @@ def checkin():
         # 1. 登录
         print("正在登录...")
         page.goto("https://www.sykb89.org/account/login")
-        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(3000)
         page.screenshot(path="debug_login.png")
         print("登录页截图已保存")
 
@@ -31,35 +31,33 @@ def checkin():
 
         # 等待登录完成
         page.wait_for_timeout(5000)  # 等待5秒
-        page.wait_for_load_state("networkidle")
         page.screenshot(path="debug_after_login.png")
         print("登录后截图已保存")
 
         # 2. 签到
         print("正在签到...")
         page.goto("https://www.sykb89.org/home/gift/checkIn")
-        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(5000)  # 等待5秒加载
         page.screenshot(path="debug.png")  # 截图保存
         print("截图已保存为 debug.png")
 
-        # 点击签到按钮（根据实际选择器调整）
+        # 点击签到按钮
         try:
             # 先检查是否已签到
             if page.locator('text=已签到').count() > 0:
                 print("今日已签到，无需重复签到")
             else:
-                # 尝试点击签到按钮
-                sign_btn = page.locator('button:has-text("签到"):not(:has-text("已签到"))')
-                if sign_btn.count() > 0:
-                    sign_btn.first.click()
-                    page.wait_for_timeout(1000)
-                    sign_btn.first.click()  # 第二次点击
-                    page.wait_for_timeout(1000)
-                    sign_btn.first.click()  # 第三次点击
-                    page.wait_for_timeout(2000)
-                    print("签到成功！")
-                else:
-                    print("未找到签到按钮")
+                # 用 JavaScript 点击签到按钮
+                page.evaluate('''() => {
+                    const btn = document.querySelector('button.v-btn:not(.v-btn--disabled)');
+                    if (btn) {
+                        btn.click();
+                        setTimeout(() => btn.click(), 1000);
+                        setTimeout(() => btn.click(), 2000);
+                    }
+                }''')
+                page.wait_for_timeout(3000)
+                print("签到操作已执行")
         except Exception as e:
             print(f"签到过程出错: {e}")
 
