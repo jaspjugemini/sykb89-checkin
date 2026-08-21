@@ -23,6 +23,14 @@ def checkin():
         # 填写账号密码
         page.fill('input[type="text"]', username)
         page.fill('input[type="password"]', password)
+
+        # 检查是否有验证码
+        captcha = page.locator('img[src*="captcha"], input[name*="captcha"], .captcha')
+        if captcha.count() > 0:
+            print("检测到验证码，无法自动登录")
+        else:
+            print("未检测到验证码")
+
         page.screenshot(path="debug_filled.png")
         print("填写后截图已保存")
 
