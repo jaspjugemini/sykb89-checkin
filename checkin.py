@@ -64,9 +64,23 @@ def checkin():
         page.screenshot(path="debug_login.png")
         print("登录页截图已保存")
 
-        # 填写账号密码
-        page.fill('input[type="text"]', username)
-        page.fill('input[type="password"]', password)
+        # 填写账号密码 - 等待输入框出现
+        try:
+            page.wait_for_selector('#input-v-4', timeout=15000)
+            page.fill('#input-v-4', username)
+            page.fill('#input-v-7', password)
+            print("填写成功")
+        except Exception as e:
+            print(f"填写失败: {e}")
+            # 打印页面HTML看看加载了什么
+            html = page.content()
+            print(f"页面HTML长度: {len(html)}")
+            # 检查是否有输入框
+            inputs = page.locator('input')
+            print(f"输入框数量: {inputs.count()}")
+            # 打印所有input的outerHTML
+            for i in range(min(inputs.count(), 5)):
+                print(f"Input {i}: {inputs.nth(i).get_attribute('outerHTML')}")
 
         # 检查是否有验证码
         captcha = page.locator('img[src*="captcha"], input[name*="captcha"], .captcha')

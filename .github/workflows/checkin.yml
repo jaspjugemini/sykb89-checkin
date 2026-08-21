@@ -2,20 +2,37 @@ name: daily-checkin
 
 on:
   schedule:
+    # 每天北京时间早上 8:00 (UTC 0:00)
     - cron: '0 0 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install playwright requests && playwright install chromium
-      - run: sudo apt-get install -y xvfb
-      - run: xvfb-run python checkin.py
+
+      - name: 安装依赖
+        run: |
+          pip install playwright requests
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: 运行签到脚本
+        run: python checkin.py
         env:
           USER: ${{ secrets.USER }}
           PWD: ${{ secrets.PWD }}
+        timeout-minutes: 5
+
+      - name: 上传截图（调试用）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: '*.png'
+          retention-days: 3
