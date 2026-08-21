@@ -48,19 +48,28 @@ def checkin():
                 print("今日已签到，无需重复签到")
             else:
                 # 用 JavaScript 点击签到按钮（匹配"立即签到"或"签到"）
-                page.evaluate('''() => {
+                clicked = page.evaluate('''() => {
                     const btns = document.querySelectorAll('button.v-btn:not(.v-btn--disabled)');
                     for (const btn of btns) {
                         if (btn.textContent.includes('签到') && !btn.textContent.includes('已签到')) {
                             btn.click();
                             setTimeout(() => btn.click(), 1000);
                             setTimeout(() => btn.click(), 2000);
-                            break;
+                            return true;
                         }
                     }
+                    return false;
                 }''')
-                page.wait_for_timeout(3000)
-                print("签到操作已执行")
+
+                if clicked:
+                    page.wait_for_timeout(3000)
+                    # 检查签到结果
+                    if page.locator('text=已签到').count() > 0:
+                        print("签到成功！")
+                    else:
+                        print("签到操作已执行，请检查结果")
+                else:
+                    print("未找到签到按钮")
         except Exception as e:
             print(f"签到过程出错: {e}")
 
