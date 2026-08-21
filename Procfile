@@ -1,1 +1,1 @@
-worker: python checkin.py
+worker: bash start.sh

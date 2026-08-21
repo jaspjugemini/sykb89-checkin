@@ -45,7 +45,7 @@ def checkin():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,  # 使用非headless模式，配合xvfb
+            headless=True,
             args=[
                 '--disable-blink-features=AutomationControlled',
                 '--disable-features=IsolateOrigins,site-per-process',
