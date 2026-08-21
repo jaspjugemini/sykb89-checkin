@@ -38,6 +38,8 @@ def checkin():
         print("正在签到...")
         page.goto("https://www.sykb89.org/home/gift/checkIn")
         page.wait_for_timeout(5000)  # 等待5秒加载
+        print(f"当前URL: {page.url}")
+        print(f"按钮数量: {page.locator('button.v-btn').count()}")
         page.screenshot(path="debug.png")  # 截图保存
         print("截图已保存为 debug.png")
 
