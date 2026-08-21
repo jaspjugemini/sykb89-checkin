@@ -1,4 +1,5 @@
 import os
+import requests
 from playwright.sync_api import sync_playwright
 
 def checkin():
@@ -9,9 +10,42 @@ def checkin():
         print("错误：未设置 USER 或 PWD 环境变量")
         return
 
+    # 先尝试用requests登录
+    print("尝试用requests登录...")
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    })
+
+    # 获取登录页面
+    login_page = session.get('https://www.sykb89.org/account/login')
+    print(f"登录页面状态码: {login_page.status_code}")
+
+    # 尝试登录
+    login_data = {
+        'username': username,
+        'password': password,
+    }
+    login_response = session.post('https://www.sykb89.org/account/login', data=login_data)
+    print(f"登录响应状态码: {login_response.status_code}")
+    print(f"登录后URL: {login_response.url}")
+
+    if 'account/login' in login_response.url:
+        print("requests登录失败，尝试用Playwright...")
+    else:
+        print("requests登录成功！")
+        # 尝试签到
+        checkin_response = session.get('https://www.sykb89.org/home/gift/checkIn')
+        print(f"签到页面状态码: {checkin_response.status_code}")
+        if '已签到' in checkin_response.text:
+            print("今日已签到，无需重复签到")
+        elif '立即签到' in checkin_response.text:
+            print("找到签到按钮，但需要浏览器点击")
+        return
+
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,  # 使用非headless模式
+            headless=True,
             args=[
                 '--disable-blink-features=AutomationControlled',
                 '--disable-features=IsolateOrigins,site-per-process',
