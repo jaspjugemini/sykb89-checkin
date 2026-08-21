@@ -20,9 +20,9 @@ def checkin():
         page.screenshot(path="debug_login.png")
         print("登录页截图已保存")
 
-        # 填写账号密码（根据实际选择器调整）
-        page.fill('input[name="username"], input[type="text"], input[type="email"], input[type="tel"]', username)
-        page.fill('input[name="password"], input[type="password"]', password)
+        # 填写账号密码
+        page.fill('input[type="text"]', username)
+        page.fill('input[type="password"]', password)
         page.screenshot(path="debug_filled.png")
         print("填写后截图已保存")
 
