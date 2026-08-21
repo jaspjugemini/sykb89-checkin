@@ -49,16 +49,20 @@ def checkin():
         print(f"登录按钮数量: {login_btn.count()}")
         if login_btn.count() > 0:
             login_btn.first.click()
-            page.wait_for_timeout(3000)
-            # 检查是否有错误消息
-            error_msg = page.locator('.v-alert, .error, .message, [class*="error"]').first
-            if error_msg.count() > 0:
-                print(f"错误信息: {error_msg.inner_text()}")
+            # 等待URL变化或页面跳转
+            try:
+                page.wait_for_url("**/home**", timeout=10000)
+                print("登录成功，已跳转")
+            except:
+                print("等待跳转超时")
+                page.wait_for_timeout(3000)
+                # 检查是否有错误消息
+                error_msg = page.locator('.v-alert, .error, .message, [class*="error"]').first
+                if error_msg.count() > 0:
+                    print(f"错误信息: {error_msg.inner_text()}")
         else:
             print("未找到登录按钮")
 
-        # 等待登录完成
-        page.wait_for_timeout(5000)  # 等待5秒
         print(f"登录后URL: {page.url}")
         page.screenshot(path="debug_after_login.png")
         print("登录后截图已保存")
