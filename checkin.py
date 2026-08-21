@@ -47,13 +47,16 @@ def checkin():
             if page.locator('text=已签到').count() > 0:
                 print("今日已签到，无需重复签到")
             else:
-                # 用 JavaScript 点击签到按钮
+                # 用 JavaScript 点击签到按钮（匹配"立即签到"或"签到"）
                 page.evaluate('''() => {
-                    const btn = document.querySelector('button.v-btn:not(.v-btn--disabled)');
-                    if (btn) {
-                        btn.click();
-                        setTimeout(() => btn.click(), 1000);
-                        setTimeout(() => btn.click(), 2000);
+                    const btns = document.querySelectorAll('button.v-btn:not(.v-btn--disabled)');
+                    for (const btn of btns) {
+                        if (btn.textContent.includes('签到') && !btn.textContent.includes('已签到')) {
+                            btn.click();
+                            setTimeout(() => btn.click(), 1000);
+                            setTimeout(() => btn.click(), 2000);
+                            break;
+                        }
                     }
                 }''')
                 page.wait_for_timeout(3000)
