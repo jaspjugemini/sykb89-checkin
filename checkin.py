@@ -31,6 +31,11 @@ def checkin():
         print(f"登录按钮数量: {login_btn.count()}")
         if login_btn.count() > 0:
             login_btn.first.click()
+            page.wait_for_timeout(3000)
+            # 检查是否有错误消息
+            error_msg = page.locator('.v-alert, .error, .message, [class*="error"]').first
+            if error_msg.count() > 0:
+                print(f"错误信息: {error_msg.inner_text()}")
         else:
             print("未找到登录按钮")
 
