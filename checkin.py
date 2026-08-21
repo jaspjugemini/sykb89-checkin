@@ -27,10 +27,16 @@ def checkin():
         print("填写后截图已保存")
 
         # 点击登录按钮
-        page.click('button[type="submit"], button:has-text("登录"), button:has-text("Login")')
+        login_btn = page.locator('button[type="submit"], button:has-text("登录"), button:has-text("Login")')
+        print(f"登录按钮数量: {login_btn.count()}")
+        if login_btn.count() > 0:
+            login_btn.first.click()
+        else:
+            print("未找到登录按钮")
 
         # 等待登录完成
         page.wait_for_timeout(5000)  # 等待5秒
+        print(f"登录后URL: {page.url}")
         page.screenshot(path="debug_after_login.png")
         print("登录后截图已保存")
 
